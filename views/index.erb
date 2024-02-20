@@ -1,13 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Task Time Calculator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Time Calculator</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
-    <ul>
-        <% @tasks.each do |task| %>
-            <li><%= task.name %></li>
-        <% end %>
-    </ul>
+
+  <h1>Task Time Calculator</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Start Time</th>
+        <th>Duration</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tasks.each do |task| %>
+        <tr>
+          <td><%= task.name %></td>
+          <td><%= task.start.strftime("%I:%M %p") %></td>
+          <td><%= task.duration %></td>
+          <td><%= task.notes %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
 </body>
 </html>
