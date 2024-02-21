@@ -32,6 +32,7 @@
         <th>Start Time</th>
         <th>Duration</th>
         <th>Notes</th>
+        <th>Edit</th>
       </tr>
     </thead>
     <tbody>
@@ -41,10 +42,26 @@
           <td><%= task.start.strftime("%I:%M %p") %></td>
           <td><%= task.duration %></td>
           <td><%= task.notes %></td>
+          <td>
+            <form action="/delete_task" method="post" style="display:inline;">
+                <input type="hidden" name="task_id" value="<%= task.id %>">
+                <button type="submit" class="delete-button">Delete</button>
+            </form>
+          </td>
         </tr>
       <% end %>
+      <tr>
+        <form id="newTaskForm" action="/save_task" method="post">
+            <td><input type="text" name="new_task_name" placeholder="Task name"></td>
+            <td><input type="text" name="new_task_start" placeholder="Start time (HH:MM AM/PM)"></td>
+            <td><input type="text" name="new_task_duration" placeholder="Duration (minutes)"></td>
+            <td><input type="text" name="new_task_notes" placeholder="Notes"></td>
+            <td><button type="submit" class="save-button">Save</button></td>
+        </form>
+      </tr>
     </tbody>
   </table>
+
 
 </body>
 </html>
