@@ -21,11 +21,13 @@ class TaskTimeCalc < Sinatra::Base
         new_task_start = params[:new_task_start]
         new_task_duration = params[:new_task_duration]
         new_task_notes = params[:new_task_notes]
-      
+
+        start_time = DateTime.strptime(new_task_start, "%I:%M %p")
+
         # Create a new task record in the database
         Task.create(
           name: new_task_name,
-          start: Time.parse(new_task_start),  # Parse the time string to a Time object
+          start: start_time,  # Parse the time string to a Time object
           duration: new_task_duration.to_i,   # Convert duration to an integer
           notes: new_task_notes
         )
