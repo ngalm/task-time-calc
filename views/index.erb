@@ -30,7 +30,8 @@
       <tr>
         <th>Name</th>
         <th>Start Time</th>
-        <th>Duration</th>
+        <th>End Time</th>
+        <th>Duration (min)</th>
         <th>Notes</th>
         <th>Edit</th>
       </tr>
@@ -40,6 +41,11 @@
         <tr>
           <td><%= task.name %></td>
           <td><%= task.start.strftime("%I:%M %p") %></td>
+          <td>
+            <% if task.start && task.duration %>
+                <%= (task.start + (task.duration * 60)).strftime("%I:%M %p") %>
+            <% end %>
+          </td>
           <td><%= task.duration %></td>
           <td><%= task.notes %></td>
           <td>
@@ -54,6 +60,7 @@
         <form id="newTaskForm" action="/save_task" method="post">
             <td><input type="text" name="new_task_name" placeholder="Task name"></td>
             <td><input type="text" name="new_task_start" placeholder="Start time (HH:MM AM/PM)"></td>
+            <td></td>
             <td><input type="text" name="new_task_duration" placeholder="Duration (minutes)"></td>
             <td><input type="text" name="new_task_notes" placeholder="Notes"></td>
             <td><button type="submit" class="save-button">Save</button></td>
