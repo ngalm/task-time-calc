@@ -12,23 +12,29 @@ end
 class TaskTimeCalc < Sinatra::Base
     get '/' do
         @tasks = Task.all
-        erb :index
+        default_start_time = @tasks.last&.end_time  # fetch  prev task's end_time to be new task's start  (if prev exists)
+        erb :index, locals: { default_start_time: default_start_time }
     end
 
     post '/save_task' do
-        # Extract form data from params
         new_task_name = params[:new_task_name]
-        new_task_start = params[:new_task_start]
-        new_task_duration = params[:new_task_duration]
+
+        if params[:new_task_start].to_s.empty? #if the user has not provided a start time...
+            new_task_start = @tasks.last.end_time
+        else
+            new_task_start = DateTime.strptime(params[:new_task_start], "%I:%M %p") # otherwise, use the user's inputted start time
+        end
+        new_task_duration = params[:new_task_duration].to_i
         new_task_notes = params[:new_task_notes]
 
-        start_time = DateTime.strptime(new_task_start, "%I:%M %p")
+        end_time = new_task_start + Rational(new_task_duration, 1440)
 
         # Create a new task record in the database
         Task.create(
           name: new_task_name,
-          start: start_time,  # Parse the time string to a Time object
-          duration: new_task_duration.to_i,   # Convert duration to an integer
+          start: new_task_start,  
+          end_time: end_time,
+          duration: new_task_duration,   
           notes: new_task_notes
         )
       
