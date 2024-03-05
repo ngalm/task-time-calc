@@ -11,6 +11,17 @@ require './config/environment'
 #end
 
 class TaskTimeCalc < Sinatra::Base
+
+    #configure :development do
+        # Your development configuration here
+        #commented out bc in environment.rb file
+    #end
+    
+    #configure :production do
+        # Your production configuration here
+        #commented out bc in environment.rb file
+    #end
+
     get '/' do
         @tasks = Task.all
         default_start_time = @tasks.last&.end_time  # fetch  prev task's end_time to be new task's start  (if prev exists)
