@@ -2,12 +2,13 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require './models/task'
+require './config/environment'
 
 #set :database, {adapter: "sqlite3", database: "task-time-calc.sqlite3"}
 
-configure :development, :production do
-    set :database, { adapter: 'sqlite3', database: "time-task-calc-db.sqlite3" }
-end
+#configure :development, :production do
+#    set :database, { adapter: 'sqlite3', database: "time-task-calc-db.sqlite3" }
+#end
 
 class TaskTimeCalc < Sinatra::Base
     get '/' do
