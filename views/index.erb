@@ -4,33 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Task Time Calculator</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0 auto; /* Center the table horizontally */
+      }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
 
-    th {
-      background-color: #f2f2f2;
-    }
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .title-table {
+        width: 19%;
+        margin-left: 40px; /* Adjust this value as needed */
+      }
+
   </style>
 </head>
 <body>
 
-  <h1>Task Time Calculator</h1>
+  <div class="title-container">
+    <h1>Task Time Calculator</h1>
+
+    <table class="title-table">
+      <thead>
+        <tr>
+          <th>Change Start</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <form id="centralStartTime" action="/change_central_start" method="post">
+            <div style="display: flex; align-items: center;">
+              <td><input type="text" name="central_start_hr" placeholder="Hour" required size="4">
+              :
+              <input type="text" name="central_start_min" placeholder="Min" required size="4">
+              <input type="text" name="central_start_ampm" placeholder="AM/PM" required size="6">
+              <button type="submit" class="save-button">Save</button></td>
+            </div>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <table>
     <thead>
       <tr>
         <th>Name</th>
-        <th>Start Time</th>
-        <th>End Time</th>
+        <th>Start</th>
+        <th>End</th>
         <th>Duration (min)</th>
         <th>Notes</th>
         <th>Edit</th>
@@ -40,12 +76,8 @@
       <% @tasks.each do |task| %>
         <tr>
           <td><%= task.name %></td>
-          <td><%= task.start.strftime("%I:%M %p") %></td>
-          <td>
-            <% if task.start && task.duration %>
-                <%= (task.start + (task.duration * 60)).strftime("%I:%M %p") %>
-            <% end %>
-          </td>
+          <td><%= format_start_time_helper(task) %></td>
+          <td><%= format_end_time_helper(task) %></td>
           <td><%= task.duration %></td>
           <td><%= task.notes %></td>
           <td>
@@ -60,10 +92,10 @@
         <form id="newTaskForm" action="/save_task" method="post">
             <td><input type="text" name="new_task_name" placeholder="Task name" required ></td>
             <td>
-                <input type="text" name="new_task_start" placeholder="Start time (HH:MM AM/PM)"
-                    value="<%= default_start_time.strftime('%I:%M %p') if default_start_time %>" 
-                    <%= 'required' unless @tasks.any? %> >
-            </td>
+              <% if prev_task %>
+                <%= format_end_time_helper(prev_task) %>
+              <% end %>
+            </td> 
             <td></td>
             <td><input type="text" name="new_task_duration" placeholder="Duration (minutes)" required ></td>
             <td><input type="text" name="new_task_notes" placeholder="Notes"></td>
