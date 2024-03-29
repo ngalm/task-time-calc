@@ -10,3 +10,5 @@ group :development do
   gem 'rerun'
   gem 'sqlite3'
 end
+gem 'tzinfo-data'
+

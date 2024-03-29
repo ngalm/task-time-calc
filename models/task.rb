@@ -3,6 +3,7 @@ class Task < ActiveRecord::Base
 
     validates :duration, :presence => true
 
-    validates :start, :presence => true,
-                      :uniqueness => true
+    validates :start_hr, :presence => true
+    validates :start_min, :presence => true
+    validates :start_ampm, :presence => true
 end

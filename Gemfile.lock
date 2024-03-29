@@ -69,6 +69,8 @@ GEM
     timeout (0.4.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2024.1)
+      tzinfo (>= 1.0.0)
     webrick (1.8.1)
 
 PLATFORMS
@@ -87,6 +89,7 @@ DEPENDENCIES
   rerun
   sinatra-activerecord
   sqlite3
+  tzinfo-data
 
 RUBY VERSION
    ruby 3.3.0p0
