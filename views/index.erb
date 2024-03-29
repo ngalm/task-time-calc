@@ -35,7 +35,6 @@
   </style>
 </head>
 <body>
-
   <div class="title-container">
     <h1>Task Time Calculator</h1>
 
@@ -47,15 +46,16 @@
       </thead>
       <tbody>
         <tr>
-          <form id="centralStartTime" action="/change_central_start" method="post">
-            <div style="display: flex; align-items: center;">
-              <td><input type="text" name="central_start_hr" placeholder="Hour" required size="4">
-              :
-              <input type="text" name="central_start_min" placeholder="Min" required size="4">
-              <input type="text" name="central_start_ampm" placeholder="AM/PM" required size="6">
-              <button type="submit" class="save-button">Save</button></td>
-            </div>
-          </form>
+          <td>
+            <form id="centralStartTime" action="/change_central_time" method="post">
+              <div style="display: flex; align-items: center;">
+                <input type="text" name="central_time_hr" placeholder="Hour" <% unless central_time_hr %>required<% end %>  size="4" value="<%= central_time_hr %>" > :
+                <input type="text" name="central_time_min" placeholder="Min" <% unless central_time_min %>required<% end %>  size="4" value="<%= '%02d' % central_time_min %>">
+                <input type="text" name="central_time_ampm" placeholder="AM/PM" <% unless central_time_ampm %>required<% end %>  size="4" value="<%= central_time_ampm %>" >
+                <button type="submit" class="save-button">Save</button>
+              </div>
+            </form>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -82,29 +82,30 @@
           <td><%= task.notes %></td>
           <td>
             <form action="/delete_task" method="post" style="display:inline;">
-                <input type="hidden" name="task_id" value="<%= task.id %>">
-                <button type="submit" class="delete-button">Delete</button>
+              <input type="hidden" name="task_id" value="<%= task.id %>">
+              <button type="submit" class="delete-button">Delete</button>
             </form>
           </td>
         </tr>
       <% end %>
       <tr>
         <form id="newTaskForm" action="/save_task" method="post">
-            <td><input type="text" name="new_task_name" placeholder="Task name" required ></td>
-            <td>
-              <% if prev_task %>
-                <%= format_end_time_helper(prev_task) %>
-              <% end %>
-            </td> 
-            <td></td>
-            <td><input type="text" name="new_task_duration" placeholder="Duration (minutes)" required ></td>
-            <td><input type="text" name="new_task_notes" placeholder="Notes"></td>
-            <td><button type="submit" class="save-button">Save</button></td>
+          <td><input type="text" name="new_task_name" placeholder="Task name" required ></td>
+          <td>
+            <% if prev_task %>
+              <%= format_end_time_helper(prev_task) %>
+            <% else %>
+              <%= "#{central_time_hr}:#{'%02d' % central_time_min} #{central_time_ampm}" %>
+            <% end %>
+          </td> 
+          <td></td>
+          <td><input type="text" name="new_task_duration" placeholder="Duration (minutes)" required ></td>
+          <td><input type="text" name="new_task_notes" placeholder="Notes"></td>
+          <td><button type="submit" class="save-button">Save</button></td>
         </form>
       </tr>
     </tbody>
   </table>
-
 
 </body>
 </html>
