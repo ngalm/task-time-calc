@@ -141,17 +141,18 @@ class TaskTimeCalc < Sinatra::Base
             end_min %= 60
         end
     
-        if end_hr >= 12
+        if end_hr >= 12 && start_hr < 12
         # change am to pm or pm to am
             if end_ampm == 'PM'
                 end_ampm = 'AM'
             else
                 end_ampm = 'PM'
             end
-            if end_hr > 12
-                end_hr -= 12
-            end
         end
+        if end_hr > 12
+            end_hr -= 12
+        end
+
         return end_hr, end_min, end_ampm
     end
 end
