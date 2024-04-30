@@ -62,13 +62,39 @@ class TaskTimeCalc < Sinatra::Base
       end
 
     post '/delete_task' do
-        task_id = params[:task_id]
-        Task.find(task_id).destroy
+        # get task to delete
+        to_delete_task = Task.find(params[:task_id])
+        to_delete_task_start_hr = to_delete_task.start_hr
+        to_delete_task_start_min = to_delete_task.start_min
+        to_delete_task_start_ampm = to_delete_task.start_ampm
+
+        # delete the task
+        Task.find(params[:task_id]).destroy
+
+        # get prev and next task
+        prev_task = Task.where('id < ?', params[:task_id]).order(id: :desc).first
+        next_task = Task.where('id > ?', params[:task_id]).order(:id).first
+
+        if prev_task
+            # update the remaining tasks using prev task's times
+            update_task_times(prev_task)
+        elsif next_task
+            # if there's no prev task, update next_task to deleted tasks times
+            #   and update remaining tasks using next task's times
+            next_task.update(
+                start_hr: to_delete_task_start_hr,
+                start_min: to_delete_task_start_min,
+                start_ampm: to_delete_task_start_ampm
+            )
+            update_task_times(next_task)
+        end
+
+
         redirect '/'
     end
 
     post '/change_central_time' do
-        @tasks = Task.all
+        tasks = Task.all
         central_time_hr = params[:central_time_hr]
         central_time_min = params[:central_time_min]
         central_time_ampm = params[:central_time_ampm].upcase
@@ -82,40 +108,47 @@ class TaskTimeCalc < Sinatra::Base
             central_time_ampm: central_time_ampm, 
         )
 
-        #   if there are tasks to iterate through them
-        if @tasks.first
-            #   changing their start times
-            #   set up iteration by changing first task attributes
-            @tasks.first.update(start_hr: central_time_hr)
-            @tasks.first.update(start_min: central_time_min)
-            @tasks.first.update(start_ampm: central_time_ampm)
+        #   if there is/are task/s, update times 
+        if tasks.first
+            #   change first's start time
+            tasks.first.update(
+                start_hr: central_time_hr, 
+                start_min: central_time_min, 
+                start_ampm: central_time_ampm
+            )
 
-            prev_task = @tasks.first
+            # iterate through the rest of the tasks
+            update_task_times(tasks.first)
 
-            @tasks.each do |task|
-
-                puts prev_task.start_hr
-                puts prev_task.start_min
-                puts prev_task.start_ampm
-
-                next if task == @tasks.first
-                # calc prev_task's end time
-                prev_end_hr, prev_end_min, prev_end_ampm = calc_end_time(prev_task.start_hr, prev_task.start_min, prev_task.start_ampm, prev_task.duration)
-                
-                # update task's start to be prev's end
-                task.update(start_hr: prev_end_hr)
-                task.update(start_min: prev_end_min)
-                task.update(start_ampm: prev_end_ampm)
-
-                puts task.start_hr
-                puts task.start_min
-                puts task.start_ampm
-
-                prev_task = task
-            end
         end
 
         redirect '/'
+    end
+
+    # given a starting task, 
+    #   iterate through remaining tasks using starting task's times as a base 
+    #       to update and align the rest of the list's tasks  
+    def update_task_times(start_task) 
+        # get remaining tasks list
+        tasks = Task.where('id >= ?', start_task.id).order(:id)
+        prev_task = start_task
+
+        tasks.each do |task|
+            # don't need to update the starting task's start/end times
+            next if task == start_task
+
+            # calc prev_task's end time
+            prev_end_hr, prev_end_min, prev_end_ampm = calc_end_time(prev_task.start_hr, prev_task.start_min, prev_task.start_ampm, prev_task.duration)
+            
+            # update task's start to be prev's end
+            task.update(
+                start_hr: prev_end_hr,
+                start_min: prev_end_min,
+                start_ampm: prev_end_ampm
+            )
+
+            prev_task = task
+        end
     end
 
     # given a task, format start into appropriate string
